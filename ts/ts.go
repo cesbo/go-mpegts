@@ -14,9 +14,6 @@ const (
 
 type TS []byte
 
-// Adaptation Field
-type AdaptationField []byte
-
 type ScramblingControl byte
 
 const (
@@ -152,16 +149,6 @@ func (p TS) SetAF() {
 // ClearAF clears the Adaptation Field bit
 func (p TS) ClearAF() {
 	p[3] &^= 0x20
-}
-
-// AF returns Adaptation Field (without length byte)
-func (p TS) AF() AdaptationField {
-	s := p.HeaderSize()
-	if s == 4 || s > PacketSize {
-		return nil
-	}
-
-	return AdaptationField(p[5:s])
 }
 
 // TSC returns 2-bit Transport Scrambling Control field

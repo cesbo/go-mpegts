@@ -68,24 +68,6 @@ func TestTS_CC(t *testing.T) {
 	assert.Equal(uint8(0), packet.CC())
 }
 
-func TestTS_AF(t *testing.T) {
-	assert := assert.New(t)
-	packet := TS([]byte{
-		0x47, 0x01, 0x00, 0x20,
-		0x07, /* AF Size */
-		0x10, /* Has PCR */
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	})
-
-	assert.Equal(uint16(256), packet.PID())
-	assert.True(packet.IsAF())
-
-	af := packet.AF()
-	if assert.NotNil(af) == true {
-		assert.Equal(7, len(af))
-	}
-}
-
 func TestTS_Payload(t *testing.T) {
 	assert := assert.New(t)
 	packet := NewPacket(17)

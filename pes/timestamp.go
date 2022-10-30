@@ -28,7 +28,7 @@ func (t Timestamp) Delta(u Timestamp) Timestamp {
 	}
 }
 
-// Add returns the timestamp t + u
+// Add returns the timestamp t+u
 func (t Timestamp) Add(u Timestamp) Timestamp {
 	return (t + u) & MaxTimestamp
 }
