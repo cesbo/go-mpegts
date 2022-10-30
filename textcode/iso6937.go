@@ -13,7 +13,6 @@ func EncodeISO6937(src string) []byte {
 
 		hi := int(c >> 8)
 		lo := int(c & 0xFF)
-
 		pos := (hi_map_iso6937[hi] * 0x100) + lo
 		code := encode_map_iso6937[pos]
 

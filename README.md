@@ -14,6 +14,10 @@ Features:
     - PMT
     - SDT
 - PES header parser
+- Textcode
+    - GB 2312-1980
+    - ISO/IEC 6937
+    - ISO/IEC 8859
 
 ## Installation
 

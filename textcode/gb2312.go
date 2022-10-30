@@ -13,7 +13,6 @@ func EncodeGB2312(src string) []byte {
 
 		hi := int(c >> 8)
 		lo := int(c & 0xFF)
-
 		pos := (hi_map_gb2312[hi] * 0x100) + lo
 		code := encode_map_gb2312[pos]
 
