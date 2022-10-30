@@ -58,15 +58,15 @@ func (p PCR) Add(u PCR) PCR {
 
 // EstimatedPCR returns estimated PCR value
 //
-//	| time:-->
-//	| ---X---------X---------X
-//	|     \         \         \
-//	|      \         \         estimated PCR
-//	|       \         current PCR
-//	|        previous PCR
+//	| time -->
+//	| X---------X---------X
+//	|  \         \         \
+//	|   \         \         estimated PCR
+//	|    \         current PCR
+//	|     previous PCR
 //
 // - lastBlock - bytes between PCR(previous) and PCR(current)
-// - currentBlock - bytes between PCR(current) and PCR(estimater)
+// - currentBlock - bytes between PCR(current) and PCR(estimated)
 func (p PCR) EstimatedPCR(previous PCR, lastBlock, currentBlock uint64) PCR {
 	delta := uint64(p.Delta(previous))
 	stc := PCR(delta * currentBlock / lastBlock)
