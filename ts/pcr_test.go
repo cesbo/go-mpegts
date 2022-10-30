@@ -1,0 +1,49 @@
+package ts
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
+
+func TestPCR_Set(t *testing.T) {
+	type testData struct {
+		pcr      PCR
+		expected TS
+	}
+
+	list := []testData{
+		{
+			pcr:      86405647,
+			expected: TS{0x10, 0x00, 0x02, 0x32, 0x89, 0x7E, 0xF7},
+		},
+		{
+			pcr:      2268366350823,
+			expected: TS{0x10, 0xE1, 0x57, 0x8A, 0x18, 0xFE, 0x7B},
+		},
+	}
+
+	assert := assert.New(t)
+
+	for i, x := range list {
+		packet := NewPacket(256)
+		packet[3] |= 0x20 // has AF
+		packet[4] = 7     // AF length
+
+		SetPCR(packet, x.pcr)
+
+		assert.Equal(x.expected, packet[5:12], "#%d pcr=%d", i+1, x.pcr)
+	}
+}
+
+func TestPCR_Get(t *testing.T) {
+	assert := assert.New(t)
+
+	packet := NewPacket(256)
+	packet[3] |= 0x20 // has AF
+	packet[4] = 7
+
+	copy(packet[5:], []byte{0x10, 0xE1, 0x57, 0x8A, 0x18, 0xFE, 0x7B})
+
+	assert.Equal(PCR(2268366350823), GetPCR(packet))
+}
