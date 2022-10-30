@@ -11,7 +11,7 @@ import (
 
 type TestData struct {
 	assert          *assert.Assertions
-	section         psi.PsiSection
+	section         psi.PSI
 	expectedHandler bool
 	expectedError   bool
 }

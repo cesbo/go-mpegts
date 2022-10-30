@@ -6,15 +6,27 @@ import (
 
 type PES []byte
 
-// Checks is PES prefix is 0x000001
+// CheckPrefix checks is PES prefix equal to 0x000001.
 func (p PES) CheckPrefix() bool {
 	return (p[0] == 0) && (p[1] == 0) && (p[2] == 1)
 }
 
-// Specifies the type and number of the elementary stream.
+// SetPrefix sets PES prefix to 0x000001.
+func (p PES) SetPrefix() {
+	p[0] = 0
+	p[1] = 0
+	p[2] = 1
+}
+
+// StreamID returns the type and number of the elementary stream.
 // Audio streams (0xC0-0xDF), Video streams (0xE0-0xEF)
 func (p PES) StreamID() uint8 {
 	return p[3]
+}
+
+// SetStreamID sets Stream ID field.
+func (p PES) SetStreamID(streamID uint8) {
+	p[3] = streamID
 }
 
 // Returns true if PES has an Elementary Stream data
@@ -63,10 +75,12 @@ func (p PES) GetPTS() Timestamp {
 		(Timestamp(p[13]) >> 1)
 }
 
-// SetPTS sets PTS value.
+// SetPTS sets PTS value and turn on PTS flag.
 func (p PES) SetPTS(value Timestamp) {
 	_ = p[13]
 	value &= MaxTimestamp
+
+	p[7] |= 0x80
 
 	p[9] = 0x20 | byte(value>>29) | 0x01
 	p[10] = byte(value >> 22)
@@ -91,11 +105,12 @@ func (p PES) GetDTS() Timestamp {
 		(Timestamp(p[18]) >> 1)
 }
 
-// SetDTS sets DTS value.
+// SetDTS sets DTS value and turn on DTS flag.
 func (p PES) SetDTS(value Timestamp) {
 	_ = p[18]
 	value &= MaxTimestamp
 
+	p[7] |= 0x40
 	p[9] |= 0x10
 
 	p[14] = 0x10 | byte(value>>29) | 0x01

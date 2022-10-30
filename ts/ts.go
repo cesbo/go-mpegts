@@ -91,9 +91,19 @@ func (p TS) IsPayload() bool {
 	return (p[3] & 0x10) != 0
 }
 
+// SetPayload sets Payload bit
+func (p TS) SetPayload() {
+	p[3] |= 0x10
+}
+
 // IsPUSI checks is payload starts in the packet (Payload Unit Start Indicator)
 func (p TS) IsPUSI() bool {
 	return (p[1] & 0x40) != 0
+}
+
+// SetPUSI sets Payload Unit Start Indicator bit
+func (p TS) SetPUSI() {
+	p[1] |= 0x40
 }
 
 // ClearPUSI clears Payload Unit Start Indicator bit
@@ -132,6 +142,11 @@ func (p TS) IsTEI() bool {
 // IsAF checks the Adaptation Field bit
 func (p TS) IsAF() bool {
 	return (p[3] & 0x20) != 0
+}
+
+// SetAF sets Adaptation Field bit
+func (p TS) SetAF() {
+	p[3] |= 0x20
 }
 
 // ClearAF clears the Adaptation Field bit

@@ -20,7 +20,7 @@ const (
 )
 
 // Program Specific Information (ISO 13818-1 / 2.4.4)
-type PsiSection struct {
+type PSI struct {
 	TableID           uint8
 	Version           uint8
 	SectionNumber     uint8
@@ -46,14 +46,14 @@ var (
 type AssembleFn func(error)
 
 // Clears buffer
-func (p *PsiSection) Clear() {
+func (p *PSI) Clear() {
 	p.skip = 0
 	p.size = 0
 }
 
 // Returns PSI payload and assembling error status. Should be used in AssembleFn.
 // Buffer length is equal to PsiHeaderSize + Section Length.
-func (p *PsiSection) Payload() []byte {
+func (p *PSI) Payload() []byte {
 	return p.buffer[:p.size]
 }
 
@@ -61,7 +61,7 @@ func (p *PsiSection) Payload() []byte {
 // minSize - packet header size;
 // maxSize - total size limit;
 // crc - checksum validation.
-func (p *PsiSection) commonCheck(minSize, maxSize int, crc bool) error {
+func (p *PSI) commonCheck(minSize, maxSize int, crc bool) error {
 	if crc {
 		minSize += crc32.Size
 	}
@@ -98,7 +98,7 @@ func (p *PsiSection) commonCheck(minSize, maxSize int, crc bool) error {
 	return nil
 }
 
-func (p *PsiSection) assembleCheck() error {
+func (p *PSI) assembleCheck() error {
 	switch p.buffer[0] {
 	case 0x00: // PAT
 		return p.commonCheck(PatHeaderSize, PatMaximumSize, true)
@@ -115,7 +115,7 @@ func (p *PsiSection) assembleCheck() error {
 	return nil
 }
 
-func (p *PsiSection) callAssembleFn(fn AssembleFn, err error) {
+func (p *PSI) callAssembleFn(fn AssembleFn, err error) {
 	if err == nil {
 		err = p.assembleCheck()
 	}
@@ -125,7 +125,7 @@ func (p *PsiSection) callAssembleFn(fn AssembleFn, err error) {
 	p.Clear()
 }
 
-func (p *PsiSection) assembleStep(payload []byte) error {
+func (p *PSI) assembleStep(payload []byte) error {
 	if p.size == 0 {
 		// p.skip less than PsiHeaderSize if p.size == 0
 		skip := copy(p.buffer[p.skip:PsiHeaderSize], payload)
@@ -150,14 +150,14 @@ func (p *PsiSection) assembleStep(payload []byte) error {
 	return nil
 }
 
-func (p *PsiSection) getSectionLength() int {
+func (p *PSI) getSectionLength() int {
 	_ = p.buffer[2]
 	return PsiHeaderSize + int(binary.BigEndian.Uint16(p.buffer[1:])&0x0FFF)
 }
 
 // Assembles TS packets into single PSI.
 // Calls fn when PSI is ready or error occurs
-func (p *PsiSection) Assemble(packet ts.TS, fn AssembleFn) {
+func (p *PSI) Assemble(packet ts.TS, fn AssembleFn) {
 	payload := packet.Payload()
 	if payload == nil {
 		return
