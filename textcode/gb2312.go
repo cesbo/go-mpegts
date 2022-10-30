@@ -1,5 +1,6 @@
 package textcode
 
+// EncodeGB2312 converts an UTF-8 string into GB2312 (Simplified Chinese)
 func EncodeGB2312(src string) []byte {
 	var result []byte
 
@@ -26,6 +27,7 @@ func EncodeGB2312(src string) []byte {
 	return result
 }
 
+// DecodeGB2312 converts GB2312 into UTF-8
 func DecodeGB2312(src []byte) string {
 	var result []rune
 

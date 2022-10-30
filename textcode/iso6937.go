@@ -1,5 +1,7 @@
 package textcode
 
+// EncodeISO6937 converts an UTF-8 string into ISO-6937.
+// Latin superset of ISO/IEC 6937 with Euro and letters with diacritics.
 func EncodeISO6937(src string) []byte {
 	var result []byte
 
@@ -29,6 +31,7 @@ func EncodeISO6937(src string) []byte {
 	return result
 }
 
+// DecodeISO6937 converts ISO-6937 into UTF-8.
 func DecodeISO6937(src []byte) string {
 	var result []rune
 
