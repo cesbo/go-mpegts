@@ -1,4 +1,4 @@
-package pes
+package mpegts
 
 import (
 	"encoding/binary"

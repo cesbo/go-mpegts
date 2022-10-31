@@ -1,4 +1,4 @@
-package psi
+package mpegts
 
 import (
 	"encoding/binary"
@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/cesbo/go-mpegts/crc32"
-	"github.com/cesbo/go-mpegts/ts"
 )
 
 const (
@@ -286,77 +285,77 @@ func (p *PmtItem) AppendDescriptors(desc Descriptors) {
 	binary.BigEndian.PutUint16(p.header[3:], 0xF000|uint16(ds))
 }
 
-func (p *PmtItem) checkData05() ts.PacketType {
+func (p *PmtItem) checkData05() PacketType {
 	d := p.Descriptors()
 
 	for len(d) != 0 {
 		if d[0] == 0x6F {
-			return ts.PACKET_AIT
+			return PACKET_AIT
 		}
 
 		d = d.Next()
 	}
 
-	return ts.PACKET_DATA
+	return PACKET_DATA
 }
 
-func (p *PmtItem) checkData06() ts.PacketType {
+func (p *PmtItem) checkData06() PacketType {
 	d := p.Descriptors()
 
 	for len(d) != 0 {
 		switch d[0] {
 		case 0x56:
-			return ts.PACKET_TTX
+			return PACKET_TTX
 		case 0x59:
-			return ts.PACKET_SUB
+			return PACKET_SUB
 		case 0x6A, 0x81:
-			return ts.PACKET_AUDIO_AC_3
+			return PACKET_AUDIO_AC_3
 		case 0x7A:
-			return ts.PACKET_AUDIO_EAC_3
+			return PACKET_AUDIO_EAC_3
 		}
 
 		d = d.Next()
 	}
 
-	return ts.PACKET_DATA
+	return PACKET_DATA
 }
 
-// Get ts.PacketType by element ID and related descriptors
-func (p *PmtItem) GetType() ts.PacketType {
-	var ty ts.PacketType
+// Get PacketType by element ID and related descriptors
+func (p *PmtItem) GetType() PacketType {
+	var ty PacketType
 
 	switch p.Type() {
 	// Video
 	case 0x01:
-		ty = ts.PACKET_VIDEO_H261
+		ty = PACKET_VIDEO_H261
 	case 0x02:
-		ty = ts.PACKET_VIDEO_H262
+		ty = PACKET_VIDEO_H262
 	case 0x10:
-		ty = ts.PACKET_VIDEO_H263
+		ty = PACKET_VIDEO_H263
 	case 0x1B:
-		ty = ts.PACKET_VIDEO_H264
+		ty = PACKET_VIDEO_H264
 	case 0x24:
-		ty = ts.PACKET_VIDEO_H265
+		ty = PACKET_VIDEO_H265
 	// Audio
 	case 0x03:
-		ty = ts.PACKET_AUDIO_MP2
+		ty = PACKET_AUDIO_MP2
 	case 0x04:
-		ty = ts.PACKET_AUDIO_MP3
+		ty = PACKET_AUDIO_MP3
 	case 0x0F:
-		ty = ts.PACKET_AUDIO_AAC
+		ty = PACKET_AUDIO_AAC
 	case 0x11:
-		ty = ts.PACKET_AUDIO_LATM
+		ty = PACKET_AUDIO_LATM
 	case 0x81:
-		ty = ts.PACKET_AUDIO_AC_3
+		ty = PACKET_AUDIO_AC_3
 	case 0x87:
-		ty = ts.PACKET_AUDIO_EAC_3
+		ty = PACKET_AUDIO_EAC_3
 	// Data
 	case 0x05:
 		ty = p.checkData05()
 	case 0x06:
 		ty = p.checkData06()
 	default:
-		ty = ts.PACKET_DATA
+		ty = PACKET_DATA
 	}
 
 	return ty

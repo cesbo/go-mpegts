@@ -1,17 +1,14 @@
-package psi_test
+package mpegts
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	"github.com/cesbo/go-mpegts/psi"
-	"github.com/cesbo/go-mpegts/ts"
 )
 
 type TestData struct {
 	assert          *assert.Assertions
-	section         psi.PSI
+	section         PSI
 	expectedHandler bool
 	expectedError   bool
 }
@@ -55,8 +52,8 @@ func (t *TestData) clear() {
 	t.expectedError = false
 }
 
-func makePacket(data []byte) ts.TS {
-	p := ts.NewPacket(0)
+func makePacket(data []byte) TS {
+	p := NewPacket(0)
 	copy(p, data)
 	return p
 }

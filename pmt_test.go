@@ -1,11 +1,9 @@
-package psi
+package mpegts
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	"github.com/cesbo/go-mpegts/ts"
 )
 
 var pmtExpectedItems = []struct {
@@ -74,7 +72,7 @@ func TestPMT_Packetize(t *testing.T) {
 
 		pmt.Finalize()
 
-		expected := ts.TS{
+		expected := TS{
 			0x47, 0x44, 0x0C, 0x11, 0x00, 0x02, 0xB0, 0x1A,
 			0x00, 0x06, 0xC3, 0x00, 0x00, 0xE8, 0x12, 0xF0,
 			0x00, 0x1B, 0xE8, 0x12, 0xF0, 0x00, 0x06, 0xE8,
@@ -102,7 +100,7 @@ func TestPMT_Packetize(t *testing.T) {
 		}
 
 		packetizer := NewPacketizer(pmt)
-		packet := ts.NewPacket(1036)
+		packet := NewPacket(1036)
 
 		packet.SetCC(1)
 		if !assert.True(packetizer.NextPacket(packet)) {
@@ -124,7 +122,7 @@ func TestPMT_Packetize(t *testing.T) {
 		pmt.Finalize()
 
 		packetizer := NewPacketizer(pmt)
-		packet := ts.NewPacket(1036)
+		packet := NewPacket(1036)
 
 		assert.True(packetizer.NextPacket(packet))
 		assert.False(packetizer.NextPacket(packet))

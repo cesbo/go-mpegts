@@ -1,10 +1,9 @@
-package psi
+package mpegts
 
 import (
 	"encoding/binary"
 
 	"github.com/cesbo/go-mpegts/crc32"
-	"github.com/cesbo/go-mpegts/ts"
 )
 
 type SectionBuilder interface {
@@ -26,6 +25,7 @@ type SectionBuilder interface {
 	SectionItem(i int) []byte
 }
 
+// Packetizer splits information tables into TS packets.
 type Packetizer struct {
 	inner SectionBuilder
 
@@ -45,7 +45,7 @@ func NewPacketizer(b SectionBuilder) *Packetizer {
 	}
 }
 
-func (p *Packetizer) NextPacket(packet ts.TS) bool {
+func (p *Packetizer) NextPacket(packet TS) bool {
 	packetSkip := 4
 
 	if p.fill == p.size {
@@ -58,9 +58,9 @@ func (p *Packetizer) NextPacket(packet ts.TS) bool {
 		}
 
 		// start first packet
-		packet[1] |= 0x40 // Turn PUSI bit on
-		packet[3] |= 0x10 // Turn payload bit on
-		packet[4] = 0     // PUSI
+		packet.SetPUSI()
+		packet.SetPayload()
+		packet[4] = 0 // PUSI Pointer
 		packetSkip += 1
 
 		header := p.inner.SectionHeader(p.item)
@@ -75,7 +75,7 @@ func (p *Packetizer) NextPacket(packet ts.TS) bool {
 		p.fill += n
 		packetSkip += n
 	} else {
-		packet[1] &^= 0x40 // Turn PUSI bit off
+		packet.ClearPUSI()
 	}
 
 	for {
@@ -86,7 +86,7 @@ func (p *Packetizer) NextPacket(packet ts.TS) bool {
 				packet[packetSkip] = byte(p.crc >> shift)
 				packetSkip += 1
 				p.skip += 1
-				if packetSkip == ts.PacketSize {
+				if packetSkip == PacketSize {
 					return true
 				}
 			}
@@ -126,13 +126,13 @@ func (p *Packetizer) NextPacket(packet ts.TS) bool {
 			p.item += 1
 		}
 
-		if packetSkip == ts.PacketSize {
+		if packetSkip == PacketSize {
 			return true
 		}
 	}
 
-	if packetSkip < ts.PacketSize {
-		copy(packet[packetSkip:], ts.NullTS[packetSkip:])
+	if packetSkip < PacketSize {
+		copy(packet[packetSkip:], NullTS[packetSkip:])
 	}
 
 	return true

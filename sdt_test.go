@@ -1,12 +1,9 @@
-package psi_test
+package mpegts
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-
-	"github.com/cesbo/go-mpegts/psi"
-	"github.com/cesbo/go-mpegts/ts"
 )
 
 func TestSDT_Decode(t *testing.T) {
@@ -21,7 +18,7 @@ func TestSDT_Decode(t *testing.T) {
 		0x39, 0xB0,
 	}
 
-	sdt := new(psi.SDT)
+	sdt := new(SDT)
 	if err := sdt.ParseSdtSection(data); !assert.NoError(err) {
 		return
 	}
@@ -40,7 +37,7 @@ func TestSDT_Decode(t *testing.T) {
 	assert.Equal(false, item.IsScrambled())
 	assert.Equal(uint8(0x04), item.RunningStatus())
 
-	desc := psi.Descriptors{
+	desc := Descriptors{
 		0x48, 0x14, 0x16, 0x05, 0x01, 0xC0, 0xC2, 0xC0,
 		0xC1, 0x0C, 0x01, 0x30, 0x38, 0x20, 0xBA, 0xB0,
 		0xC0, 0xC3, 0xC1, 0xB5, 0xBB, 0xCC,
@@ -80,18 +77,18 @@ func TestSDT_Packetize(t *testing.T) {
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 	}
 
-	sdt := psi.NewSdt()
+	sdt := NewSdt()
 	sdt.SetVersion(1)
 	sdt.SetTSID(1)
 	sdt.SetONID(1)
 
 	items := []struct {
 		pnr  uint16
-		desc psi.Descriptors
+		desc Descriptors
 	}{
 		{
 			pnr: 1,
-			desc: psi.Descriptors{
+			desc: Descriptors{
 				0x48, 0x1B, 0x01, 0x06, 0x41, 0x76, 0x61, 0x6C,
 				0x70, 0x61, 0x12, 0x41, 0x76, 0x61, 0x6C, 0x70,
 				0x61, 0x31, 0x3A, 0x20, 0x4D, 0x50, 0x45, 0x47,
@@ -100,7 +97,7 @@ func TestSDT_Packetize(t *testing.T) {
 		},
 		{
 			pnr: 2,
-			desc: psi.Descriptors{
+			desc: Descriptors{
 				0x48, 0x1D, 0x01, 0x06, 0x41, 0x76, 0x61, 0x6C,
 				0x70, 0x61, 0x14, 0x41, 0x76, 0x61, 0x6C, 0x70,
 				0x61, 0x32, 0x3A, 0x20, 0x4D, 0x50, 0x45, 0x47,
@@ -109,7 +106,7 @@ func TestSDT_Packetize(t *testing.T) {
 		},
 		{
 			pnr: 3,
-			desc: psi.Descriptors{
+			desc: Descriptors{
 				0x48, 0x1D, 0x01, 0x06, 0x41, 0x76, 0x61, 0x6C,
 				0x70, 0x61, 0x14, 0x41, 0x76, 0x61, 0x6C, 0x70,
 				0x61, 0x33, 0x3A, 0x20, 0x4D, 0x50, 0x45, 0x47,
@@ -118,7 +115,7 @@ func TestSDT_Packetize(t *testing.T) {
 		},
 		{
 			pnr: 4,
-			desc: psi.Descriptors{
+			desc: Descriptors{
 				0x48, 0x1B, 0x01, 0x06, 0x41, 0x76, 0x61, 0x6C,
 				0x70, 0x61, 0x12, 0x41, 0x76, 0x61, 0x6C, 0x70,
 				0x61, 0x34, 0x3A, 0x20, 0x4D, 0x50, 0x45, 0x47,
@@ -127,7 +124,7 @@ func TestSDT_Packetize(t *testing.T) {
 		},
 		{
 			pnr: 5,
-			desc: psi.Descriptors{
+			desc: Descriptors{
 				0x48, 0x16, 0x16, 0x06, 0x41, 0x76, 0x61, 0x6C,
 				0x70, 0x61, 0x0D, 0x41, 0x76, 0x61, 0x6C, 0x70,
 				0x61, 0x35, 0x3A, 0x20, 0x48, 0x32, 0x36, 0x34,
@@ -135,7 +132,7 @@ func TestSDT_Packetize(t *testing.T) {
 		},
 		{
 			pnr: 6,
-			desc: psi.Descriptors{
+			desc: Descriptors{
 				0x48, 0x19, 0x19, 0x06, 0x41, 0x76, 0x61, 0x6C,
 				0x70, 0x61, 0x10, 0x41, 0x76, 0x61, 0x6C, 0x70,
 				0x61, 0x36, 0x3A, 0x20, 0x48, 0x44, 0x20, 0x48,
@@ -145,7 +142,7 @@ func TestSDT_Packetize(t *testing.T) {
 	}
 
 	for _, item := range items {
-		sdtItem := psi.NewSdtItem()
+		sdtItem := NewSdtItem()
 		sdtItem.SetPNR(item.pnr)
 		sdtItem.SetSchedule(false)
 		sdtItem.SetPresentFollowing(true)
@@ -159,20 +156,20 @@ func TestSDT_Packetize(t *testing.T) {
 
 	//
 
-	packetizer := psi.NewPacketizer(sdt)
-	packet := ts.NewPacket(17)
+	packetizer := NewPacketizer(sdt)
+	packet := NewPacket(17)
 
 	packet.SetCC(0)
 	if !assert.True(packetizer.NextPacket(packet)) {
 		return
 	}
-	assert.Equal(ts.TS(expectedTS[:188]), packet)
+	assert.Equal(TS(expectedTS[:188]), packet)
 
 	packet.IncrementCC()
 	if !assert.True(packetizer.NextPacket(packet)) {
 		return
 	}
-	assert.Equal(ts.TS(expectedTS[188:]), packet)
+	assert.Equal(TS(expectedTS[188:]), packet)
 
 	assert.False(packetizer.NextPacket(packet))
 }

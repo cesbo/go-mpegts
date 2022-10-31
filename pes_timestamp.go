@@ -1,5 +1,6 @@
-package pes
+package mpegts
 
+// Timestamp is a 33-bit MPEG-2 timestamp for PTS/DTS
 type Timestamp uint64
 
 const (

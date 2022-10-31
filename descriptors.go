@@ -1,4 +1,4 @@
-package psi
+package mpegts
 
 import "errors"
 

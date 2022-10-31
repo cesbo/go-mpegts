@@ -1,11 +1,10 @@
-package psi
+package mpegts
 
 import (
 	"encoding/binary"
 	"errors"
 
 	"github.com/cesbo/go-mpegts/crc32"
-	"github.com/cesbo/go-mpegts/ts"
 )
 
 const (
@@ -157,7 +156,7 @@ func (p *PSI) getSectionLength() int {
 
 // Assembles TS packets into single PSI.
 // Calls fn when PSI is ready or error occurs
-func (p *PSI) Assemble(packet ts.TS, fn AssembleFn) {
+func (p *PSI) Assemble(packet TS, fn AssembleFn) {
 	payload := packet.Payload()
 	if payload == nil {
 		return

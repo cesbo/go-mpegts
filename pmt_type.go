@@ -1,4 +1,4 @@
-package ts
+package mpegts
 
 type PacketType uint32
 
