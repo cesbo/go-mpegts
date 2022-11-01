@@ -18,7 +18,7 @@ const (
 var psiMockHeader [psiMockHeaderSize]byte
 
 func (p psiMock) Packetize(packet TS, fn func(TS)) error {
-	return packetize(p, packet, fn)
+	return psiPacketize(p, packet, fn)
 }
 
 func (p psiMock) sectionSize(i int) int {
@@ -165,7 +165,7 @@ func TestPacketize_SingleTS(t *testing.T) {
 	packet.SetCC(1)
 
 	call := 0
-	err := packetize(psi, packet, func(ts TS) {
+	err := psi.Packetize(packet, func(ts TS) {
 		if call == 0 {
 			assert.Equal(expected, ts[:len(expected)])
 		}

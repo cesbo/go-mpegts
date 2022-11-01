@@ -126,7 +126,7 @@ func (p *PAT) Finalize() {
 
 // Packetize splits PAT to TS packets
 func (p *PAT) Packetize(packet TS, fn func(TS)) error {
-	return packetize(p, packet, fn)
+	return psiPacketize(p, packet, fn)
 }
 
 func (p *PAT) sectionSize(i int) int {

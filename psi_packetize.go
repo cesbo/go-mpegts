@@ -25,7 +25,7 @@ type psiPacketizer interface {
 	sectionItem(i int) []byte
 }
 
-func packetize(b psiPacketizer, packet TS, fn func(TS)) error {
+func psiPacketize(b psiPacketizer, packet TS, fn func(TS)) error {
 	item := -1
 
 	var (

@@ -154,7 +154,7 @@ func (s *SDT) Finalize() {
 
 // Packetize splits SDT to TS packets
 func (s *SDT) Packetize(packet TS, fn func(TS)) error {
-	return packetize(s, packet, fn)
+	return psiPacketize(s, packet, fn)
 }
 
 func (s *SDT) sectionSize(i int) int {

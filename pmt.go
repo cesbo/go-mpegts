@@ -191,7 +191,7 @@ func (p *PMT) Finalize() {
 
 // Packetize splits PMT to TS packets
 func (p *PMT) Packetize(packet TS, fn func(TS)) error {
-	return packetize(p, packet, fn)
+	return psiPacketize(p, packet, fn)
 }
 
 func (p *PMT) sectionSize(i int) int {

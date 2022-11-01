@@ -7,13 +7,13 @@ MPEG-TS
 Features:
 
 - TS header parser
-- TS slicer
-- CRC32 (ITU V.42)
-- PSI Assemble/Packetize
+- TS Slicer
+- PSI Assembler/Packetizer
     - PAT
     - PMT
     - SDT
 - PES header parser
+- CRC32 (ITU V.42)
 - Textcode
     - GB 2312-1980
     - ISO/IEC 6937
