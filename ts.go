@@ -37,12 +37,12 @@ var NullTS = TS{
 	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 }
 
-// NewPacket allocates new packet. Sets sync byte and PID
-func NewPacket(pid uint16) TS {
-	packet := make(TS, PacketSize)
-	packet[0] = SyncByte
-	packet.SetPID(pid)
-	return packet
+// NewTS allocates new TS packet. Sets sync byte and PID
+func NewTS(pid uint16) TS {
+	ts := make(TS, PacketSize)
+	ts[0] = SyncByte
+	ts.SetPID(pid)
+	return ts
 }
 
 // PID returns packet identifier value.

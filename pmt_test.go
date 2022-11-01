@@ -99,16 +99,15 @@ func TestPMT_Packetize(t *testing.T) {
 			0xFF, 0xFF, 0xFF, 0xFF,
 		}
 
-		packetizer := NewPacketizer(pmt)
-		packet := NewPacket(1036)
-
+		counter := 0
+		packet := NewTS(1036)
 		packet.SetCC(1)
-		if !assert.True(packetizer.NextPacket(packet)) {
-			return
-		}
-		assert.Equal(expected, packet)
-
-		assert.False(packetizer.NextPacket(packet))
+		err := pmt.Packetize(packet, func(_ TS) {
+			assert.Equal(expected, packet)
+			counter += 1
+		})
+		assert.NoError(err)
+		assert.Equal(1, counter)
 	})
 
 	t.Run("empty", func(t *testing.T) {
@@ -118,13 +117,25 @@ func TestPMT_Packetize(t *testing.T) {
 		pmt.SetVersion(1)
 		pmt.SetPNR(6)
 		pmt.SetPCR(2066)
-
 		pmt.Finalize()
 
-		packetizer := NewPacketizer(pmt)
-		packet := NewPacket(1036)
+		expected := TS{
+			0x47, 0x44, 0x0C, 0x11,
+			0x00,
+			0x02, 0xB0, 0x0D,
+			0x00, 0x06, 0xC3, 0x00, 0x00, 0xE8, 0x12, 0xF0, 0x00,
+			0x46, 0x43, 0x57, 0x17,
+			0xFF, 0xFF, 0xFF, 0xFF,
+		}
 
-		assert.True(packetizer.NextPacket(packet))
-		assert.False(packetizer.NextPacket(packet))
+		counter := 0
+		packet := NewTS(1036)
+		packet.SetCC(1)
+		err := pmt.Packetize(packet, func(_ TS) {
+			assert.Equal(expected, packet[:len(expected)])
+			counter += 1
+		})
+		assert.NoError(err)
+		assert.Equal(1, counter)
 	})
 }

@@ -152,7 +152,12 @@ func (s *SDT) Finalize() {
 	}
 }
 
-func (s *SDT) SectionSize(i int) int {
+// Packetize splits SDT to TS packets
+func (s *SDT) Packetize(packet TS, fn func(TS)) error {
+	return packetize(s, packet, fn)
+}
+
+func (s *SDT) sectionSize(i int) int {
 	if i == len(s.Items) {
 		return 0
 	}
@@ -176,7 +181,7 @@ func (s *SDT) SectionSize(i int) int {
 	return size
 }
 
-func (s *SDT) SectionHeader(i int) []byte {
+func (s *SDT) sectionHeader(i int) []byte {
 	if i == -1 {
 		s.header[6] = 0
 	} else {
@@ -186,7 +191,7 @@ func (s *SDT) SectionHeader(i int) []byte {
 	return s.header[:SdtHeaderSize]
 }
 
-func (s *SDT) SectionItem(i int) []byte {
+func (s *SDT) sectionItem(i int) []byte {
 	if i == -1 {
 		return []byte{}
 	}

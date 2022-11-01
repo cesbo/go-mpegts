@@ -9,13 +9,15 @@ import (
 
 func ExampleTS() {
 	packet := TS([]byte{0x47, 0x40, 0x11, 0x15})
-	fmt.Println("PID", packet.PID())
-	fmt.Println("CC", packet.CC())
+	fmt.Println("PID", packet.PID(), "CC", packet.CC())
+
+	// Output:
+	// PID 17 CC 5
 }
 
 func TestTS(t *testing.T) {
 	assert := assert.New(t)
-	packet := NewPacket(256)
+	packet := NewTS(256)
 
 	assert.Equal(PacketSize, len(packet))
 	assert.Equal([]byte{0x47, 0x01, 0x00, 0x00}, []byte(packet[:4]))
@@ -70,7 +72,7 @@ func TestTS_CC(t *testing.T) {
 
 func TestTS_Payload(t *testing.T) {
 	assert := assert.New(t)
-	packet := NewPacket(17)
+	packet := NewTS(17)
 	packet[1] = 0x40
 	packet[3] = 0x15
 
@@ -110,7 +112,7 @@ func TestTS_Payload(t *testing.T) {
 
 func TestTS_Fill(t *testing.T) {
 	makePacketWithoutAf := func(size int) (packet, expected TS) {
-		packet = NewPacket(101)
+		packet = NewTS(101)
 		packet[3] |= 0x10 // with payload
 
 		skip := 4
@@ -121,7 +123,7 @@ func TestTS_Fill(t *testing.T) {
 
 		packet.Fill(skip + size)
 
-		expected = NewPacket(101)
+		expected = NewTS(101)
 		expected[3] = 0x30
 		expected[4] = byte(PacketSize - 4 - 1 - size)
 		expected[5] = 0x00
@@ -140,7 +142,7 @@ func TestTS_Fill(t *testing.T) {
 	}
 
 	makePacketWithAf := func(size int) (packet, expected TS) {
-		packet = NewPacket(101)
+		packet = NewTS(101)
 		packet[3] |= 0x30 // with payload and adaptation field
 
 		af := []byte{
@@ -157,7 +159,7 @@ func TestTS_Fill(t *testing.T) {
 
 		packet.Fill(skip + size)
 
-		expected = NewPacket(101)
+		expected = NewTS(101)
 		expected[3] = 0x30
 		copy(expected[4:], af)
 		expected[4] = byte(PacketSize - 4 - 1 - size)

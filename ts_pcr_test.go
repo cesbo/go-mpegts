@@ -26,7 +26,7 @@ func TestPCR_Set(t *testing.T) {
 	assert := assert.New(t)
 
 	for i, x := range list {
-		packet := NewPacket(256)
+		packet := NewTS(256)
 		packet[3] |= 0x20 // has AF
 		packet[4] = 7     // AF length
 
@@ -39,7 +39,7 @@ func TestPCR_Set(t *testing.T) {
 func TestPCR_Get(t *testing.T) {
 	assert := assert.New(t)
 
-	packet := NewPacket(256)
+	packet := NewTS(256)
 	packet[3] |= 0x20 // has AF
 	packet[4] = 7
 

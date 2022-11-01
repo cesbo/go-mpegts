@@ -124,7 +124,12 @@ func (p *PAT) Finalize() {
 	}
 }
 
-func (p *PAT) SectionSize(i int) int {
+// Packetize splits PAT to TS packets
+func (p *PAT) Packetize(packet TS, fn func(TS)) error {
+	return packetize(p, packet, fn)
+}
+
+func (p *PAT) sectionSize(i int) int {
 	if i == len(p.Items) {
 		return 0
 	}
@@ -148,7 +153,7 @@ func (p *PAT) SectionSize(i int) int {
 	return size
 }
 
-func (p *PAT) SectionHeader(i int) []byte {
+func (p *PAT) sectionHeader(i int) []byte {
 	if i == -1 {
 		p.header[6] = 0
 	} else {
@@ -158,7 +163,7 @@ func (p *PAT) SectionHeader(i int) []byte {
 	return p.header[:PatHeaderSize]
 }
 
-func (p *PAT) SectionItem(i int) []byte {
+func (p *PAT) sectionItem(i int) []byte {
 	if i == -1 {
 		return []byte{}
 	}

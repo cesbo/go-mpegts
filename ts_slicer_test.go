@@ -9,12 +9,14 @@ import (
 
 func ExampleSlicer() {
 	slicer := Slicer{}
-	buffer := []byte{}
+	buffer := NullTS
 
 	for packet := slicer.Begin(buffer); packet != nil; packet = slicer.Next() {
-		fmt.Println(len(packet) == PacketSize)
-		fmt.Println(packet[0] == SyncByte)
+		fmt.Println("PID", packet.PID())
 	}
+
+	// Output:
+	// PID 8191
 }
 
 func TestSlicer(t *testing.T) {

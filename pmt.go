@@ -189,7 +189,12 @@ func (p *PMT) Finalize() {
 	}
 }
 
-func (p *PMT) SectionSize(i int) int {
+// Packetize splits PMT to TS packets
+func (p *PMT) Packetize(packet TS, fn func(TS)) error {
+	return packetize(p, packet, fn)
+}
+
+func (p *PMT) sectionSize(i int) int {
 	if i == len(p.Items) {
 		return 0
 	}
@@ -216,7 +221,7 @@ func (p *PMT) SectionSize(i int) int {
 	return size
 }
 
-func (p *PMT) SectionHeader(i int) []byte {
+func (p *PMT) sectionHeader(i int) []byte {
 	if i == -1 {
 		p.header[6] = 0
 		s := uint16(len(p.header) - PmtHeaderSize)
@@ -231,7 +236,7 @@ func (p *PMT) SectionHeader(i int) []byte {
 	return p.header[:PmtHeaderSize]
 }
 
-func (p *PMT) SectionItem(i int) []byte {
+func (p *PMT) sectionItem(i int) []byte {
 	if i == -1 {
 		return p.header[PmtHeaderSize:]
 	}

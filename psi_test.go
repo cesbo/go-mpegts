@@ -53,7 +53,7 @@ func (t *TestData) clear() {
 }
 
 func makePacket(data []byte) TS {
-	p := NewPacket(0)
+	p := NewTS(0)
 	copy(p, data)
 	return p
 }
