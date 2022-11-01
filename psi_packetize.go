@@ -113,6 +113,10 @@ func (p *PsiPacketizer) Next(ts TS) bool {
 			continue
 		}
 
+		if p.skip == 0 {
+			p.crc = crc32.Checksum(p.crc, data)
+		}
+
 		n := copy(ts[packetFill:], data[p.skip:])
 		packetFill += n
 		p.skip += n
