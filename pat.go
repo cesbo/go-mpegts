@@ -124,11 +124,9 @@ func (p *PAT) Finalize() {
 	}
 }
 
-// Packetize splits PAT to TS packets
-// packet - is a buffer to store data, on packet is ready,
-// it is passed to the callback as byte slice
-func (p *PAT) Packetize(packet TS, fn func([]byte)) error {
-	return psiPacketize(p, packet, fn)
+// Packetizer returns a new PsiPacketizer to get TS packets from PAT
+func (p *PAT) Packetizer() *PsiPacketizer {
+	return newPsiPacketizer(p)
 }
 
 func (p *PAT) sectionSize(i int) int {

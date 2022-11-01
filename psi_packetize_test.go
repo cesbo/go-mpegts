@@ -17,8 +17,8 @@ const (
 
 var psiMockHeader [psiMockHeaderSize]byte
 
-func (p psiMock) Packetize(packet TS, fn func([]byte)) error {
-	return psiPacketize(p, packet, fn)
+func (p psiMock) Packetize() *PsiPacketizer {
+	return newPsiPacketizer(p)
 }
 
 func (p psiMock) sectionSize(i int) int {
@@ -144,7 +144,7 @@ func (p psiMock) sectionItem(i int) []byte {
 func TestPacketize_SingleTS(t *testing.T) {
 	assert := assert.New(t)
 
-	expected := []byte{
+	expected := TS{
 		0x47, 0x40 | 0x11, 0x67, 0x10 | 1,
 		0x00,
 		10, 0xF0, 0x00, 13, 14, 15, 0, 0, 0xF0, 0x05,
@@ -165,20 +165,20 @@ func TestPacketize_SingleTS(t *testing.T) {
 	ts.SetCC(1)
 
 	call := 0
-	err := psi.Packetize(ts, func(data []byte) {
+	for p := psi.Packetize(); p.Next(ts); ts.IncrementCC() {
 		if call == 0 {
-			assert.Equal(expected, data[:len(expected)])
+			assert.Equal(expected, ts[:len(expected)])
 		}
+
 		call += 1
-	})
-	assert.NoError(err)
+	}
 	assert.Equal(1, call)
 }
 
 func TestPacketize_TwoTS(t *testing.T) {
 	assert := assert.New(t)
 
-	expected1 := []byte{
+	expected1 := TS{
 		0x47, 0x40 | 0x11, 0x67, 0x10 | 1,
 		0x00,
 		10, 0xF0, 0x00, 13, 14, 15, 0, 0, 0xF0, 0x00,
@@ -202,7 +202,7 @@ func TestPacketize_TwoTS(t *testing.T) {
 	expected1[186] = byte(crc >> 24)
 	expected1[187] = byte(crc >> 16)
 
-	expected2 := []byte{
+	expected2 := TS{
 		0x47, 0x11, 0x67, 0x10 | 2,
 		0x00, 0x00,
 		0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -215,16 +215,17 @@ func TestPacketize_TwoTS(t *testing.T) {
 	counter := 0
 	ts := NewTS(4455)
 	ts.SetCC(1)
-	err := psi.Packetize(ts, func(data []byte) {
+
+	for p := psi.Packetize(); p.Next(ts); ts.IncrementCC() {
 		switch counter {
 		case 0:
-			assert.Equal(expected1, data)
+			assert.Equal(expected1, ts)
 		case 1:
-			assert.Equal(expected2, data[:len(expected2)])
+			assert.Equal(expected2, ts[:len(expected2)])
 		}
+
 		counter += 1
-	})
-	assert.NoError(err)
+	}
 	assert.Equal(2, counter)
 }
 
@@ -233,7 +234,7 @@ func TestPacketize_TwoSections(t *testing.T) {
 
 	var crc uint32
 
-	expected11 := []byte{
+	expected11 := TS{
 		0x47, 0x40 | 0x11, 0x67, 0x10 | 1,
 		0x00,
 		10, 0xF0, 0x00, 13, 14, 15, 0, 1, 0xF0, 0x00,
@@ -250,7 +251,7 @@ func TestPacketize_TwoSections(t *testing.T) {
 		0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA, 0xBB, 0xBC,
 	}
 
-	expected12 := []byte{
+	expected12 := TS{
 		0x47, 0x11, 0x67, 0x10 | 2,
 		0xBD, 0xBE, 0xBF, 0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xCB, 0xCC,
 		0xCD, 0xCE, 0xCF, 0xD0, 0xD1, 0xD2, 0xD3, 0xD4, 0xD5, 0xD6, 0xD7,
@@ -265,7 +266,7 @@ func TestPacketize_TwoSections(t *testing.T) {
 
 	// second section
 
-	expected21 := []byte{
+	expected21 := TS{
 		0x47, 0x40 | 0x11, 0x67, 0x10 | 3,
 		0x00,
 		10, 0xF0, 0x00, 13, 14, 15, 1, 1, 0xF0, 0x00,
@@ -282,7 +283,7 @@ func TestPacketize_TwoSections(t *testing.T) {
 		0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xCB, 0xCC,
 	}
 
-	expected22 := []byte{
+	expected22 := TS{
 		0x47, 0x11, 0x67, 0x10 | 4,
 		0xCD, 0xCE, 0xCF, 0xD0, 0xD1, 0xD2, 0xD3, 0xD4, 0xD5, 0xD6, 0xD7, 0xD8, 0xD9, 0xDA, 0xDB, 0xDC,
 		0xDD, 0xDE, 0xDF, 0xE0, 0xE1, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7,
@@ -299,20 +300,20 @@ func TestPacketize_TwoSections(t *testing.T) {
 	counter := 0
 	ts := NewTS(4455)
 	ts.SetCC(1)
-	err := psi.Packetize(ts, func(data []byte) {
+
+	for p := psi.Packetize(); p.Next(ts); ts.IncrementCC() {
 		switch counter {
 		case 0:
-			assert.Equal(expected11, data)
+			assert.Equal(expected11, ts)
 		case 1:
-			assert.Equal(expected12, data[:len(expected12)])
+			assert.Equal(expected12, ts[:len(expected12)])
 		case 2:
-			assert.Equal(expected21, data)
+			assert.Equal(expected21, ts)
 		case 3:
-			assert.Equal(expected22, data[:len(expected22)])
+			assert.Equal(expected22, ts[:len(expected22)])
 		}
 
 		counter += 1
-	})
-	assert.NoError(err)
+	}
 	assert.Equal(4, counter)
 }

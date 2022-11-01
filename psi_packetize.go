@@ -1,14 +1,8 @@
 package mpegts
 
 import (
-	"encoding/binary"
-
 	"github.com/cesbo/go-mpegts/crc32"
 )
-
-type PsiPacketizer interface {
-	Packetize(TS, func([]byte)) error
-}
 
 type psiSection interface {
 	// Calculate section size from element i.
@@ -29,95 +23,114 @@ type psiSection interface {
 	sectionItem(i int) []byte
 }
 
-func psiPacketize(b psiSection, packet TS, fn func([]byte)) error {
-	item := -1
+// PsiPacketizer is a helper to splits PSI section into multiple TS packets.
+// If data more than fits into one section, it will be split into multiple sections.
+type PsiPacketizer struct {
+	inner       psiSection
+	sectionItem int
+	sectionSize int
+	sectionFill int
+	skip        int
+	crc         uint32
+}
 
-	var (
-		sectionSize int
-		sectionFill int
-		packetFill  int
-	)
-
-	var (
-		crc       uint32
-		crcBuffer [crc32.Size]byte
-	)
-
-	send := func(data []byte) {
-		skip := 0
-		for skip < len(data) {
-			n := copy(packet[packetFill:PacketSize], data[skip:])
-			skip += n
-			packetFill += n
-			if packetFill == PacketSize {
-				fn(packet)
-				packetFill = 4
-				packet.ClearPUSI()
-				packet.IncrementCC()
-			}
-		}
-		sectionFill += skip
+func newPsiPacketizer(inner psiSection) *PsiPacketizer {
+	return &PsiPacketizer{
+		inner:       inner,
+		sectionItem: -1,
 	}
+}
 
-	for {
-		// start new section.
-		sectionSize = b.sectionSize(item)
-		sectionFill = 0
+func (p *PsiPacketizer) Next(ts TS) bool {
+	packetFill := 4
+
+	// start new section
+	if p.sectionFill == p.sectionSize {
+		p.sectionSize = p.inner.sectionSize(p.sectionItem)
+		p.sectionFill = 0
 
 		// no more data to packetize
-		if sectionSize == 0 {
-			return nil
+		if p.sectionSize == 0 {
+			return false
 		}
 
 		// prepare first TS packet
-		packet.SetPUSI()
-		packet.SetPayload()
-		packet[4] = 0 // Set PUSI Pointer
+		ts.SetPUSI()
+		ts.SetPayload()
+		ts[4] = 0 // Set PUSI Pointer
 		packetFill = 5
 
-		header := b.sectionHeader(item)
+		header := p.inner.sectionHeader(p.sectionItem)
 
 		// set length
-		binary.BigEndian.PutUint16(
-			header[1:],
-			(((uint16(header[1] & 0xF0)) << 8) | ((uint16(sectionSize - PsiHeaderSize)) & 0x0FFF)),
-		)
+		s := uint16(p.sectionSize - PsiHeaderSize)
+		header[1] = (header[1] & 0xF0) | (uint8((s >> 8) & 0x0F))
+		header[2] = uint8(s & 0xFF)
 
-		// write PSI header
-		crc = crc32.Checksum(0xFFFFFFFF, header)
-		send(header)
+		p.crc = crc32.Checksum(0xFFFFFFFF, header)
 
-		sectionSize -= crc32.Size
+		// write section header (without descriptors)
+		n := copy(ts[packetFill:], header)
+		p.sectionFill += n
+		packetFill += n
+	} else {
+		ts.ClearPUSI()
+	}
 
-		// write PSI data
-		for sectionFill < sectionSize {
-			// put item
-			data := b.sectionItem(item)
-			if data == nil {
-				break
-			}
-
-			item += 1
-
-			if len(data) == 0 {
-				continue
-			}
-
-			crc = crc32.Checksum(crc, data)
-			send(data)
-		}
-
+	for {
 		// current section finished. set checksum
-		binary.BigEndian.PutUint32(crcBuffer[:], crc)
-		send(crcBuffer[:])
+		if (p.sectionFill + crc32.Size) == p.sectionSize {
+			for p.skip < crc32.Size {
+				shift := uint32(24 - (8 * p.skip))
+				ts[packetFill] = byte(p.crc >> shift)
+				packetFill += 1
+				p.skip += 1
 
-		if packetFill < PacketSize {
-			send(NullTS[packetFill:PacketSize])
+				if packetFill == PacketSize {
+					return true
+				}
+			}
+
+			p.sectionFill = p.sectionSize
+			p.skip = 0
+
+			// empty section
+			if p.sectionItem == -1 {
+				p.sectionItem = 0
+			}
+
+			break
 		}
 
-		// empty section without items
-		if item == -1 {
-			item = 0
+		// put item
+		data := p.inner.sectionItem(p.sectionItem)
+		if data == nil {
+			break
+		}
+
+		if len(data) == 0 {
+			p.sectionItem += 1
+			continue
+		}
+
+		n := copy(ts[packetFill:], data[p.skip:])
+		packetFill += n
+		p.skip += n
+
+		if p.skip == len(data) {
+			p.sectionItem += 1
+			p.sectionFill += p.skip
+			p.skip = 0
+		}
+
+		if packetFill == PacketSize {
+			return true
 		}
 	}
+
+	if packetFill < PacketSize {
+		copy(ts[packetFill:], NullTS[packetFill:])
+	}
+
+	return true
 }
