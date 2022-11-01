@@ -153,7 +153,9 @@ func (s *SDT) Finalize() {
 }
 
 // Packetize splits SDT to TS packets
-func (s *SDT) Packetize(packet TS, fn func(TS)) error {
+// packet - is a buffer to store data, on packet is ready,
+// it is passed to the callback as byte slice
+func (s *SDT) Packetize(packet TS, fn func([]byte)) error {
 	return psiPacketize(s, packet, fn)
 }
 

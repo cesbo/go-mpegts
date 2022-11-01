@@ -41,9 +41,9 @@ func ExamplePAT_Packetize() {
 	pat.Finalize()
 
 	ts := NewTS(0)
-	_ = pat.Packetize(ts, func(_ TS) {
+	_ = pat.Packetize(ts, func(data []byte) {
 		// TS Header with Payload start offset
-		fmt.Printf("%X...\n", ts[:25])
+		fmt.Printf("%X...\n", data[:25])
 	})
 
 	// Output:
@@ -123,7 +123,7 @@ func TestPAT_Packetize(t *testing.T) {
 	//
 
 	// OC3.demo.ts
-	expectedTS := TS{
+	expectedTS := []byte{
 		0x47, 0x40, 0x00, 0x11, 0x00, 0x00, 0xB0, 0x25, 0x00, 0x01, 0xC3, 0x00,
 		0x00, 0x00, 0x00, 0xE0, 0x10, 0x00, 0x01, 0xE4, 0x07, 0x00, 0x02, 0xE4,
 		0x08, 0x00, 0x03, 0xE4, 0x09, 0x00, 0x04, 0xE4, 0x0A, 0x00, 0x05, 0xE4,
@@ -143,10 +143,10 @@ func TestPAT_Packetize(t *testing.T) {
 	}
 
 	counter := 0
-	packet := NewTS(0)
-	packet.SetCC(1)
-	err := pat.Packetize(packet, func(_ TS) {
-		assert.Equal(expectedTS, packet)
+	ts := NewTS(0)
+	ts.SetCC(1)
+	err := pat.Packetize(ts, func(data []byte) {
+		assert.Equal(expectedTS, data)
 		counter += 1
 	})
 	assert.NoError(err)

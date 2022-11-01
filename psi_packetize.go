@@ -6,7 +6,11 @@ import (
 	"github.com/cesbo/go-mpegts/crc32"
 )
 
-type psiPacketizer interface {
+type PsiPacketizer interface {
+	Packetize(TS, func([]byte)) error
+}
+
+type psiSection interface {
 	// Calculate section size from element i.
 	// i == -1: initial section: header, descriptors, items, checksum
 	// i >= 0: next sections: header, items, checksum
@@ -25,7 +29,7 @@ type psiPacketizer interface {
 	sectionItem(i int) []byte
 }
 
-func psiPacketize(b psiPacketizer, packet TS, fn func(TS)) error {
+func psiPacketize(b psiSection, packet TS, fn func([]byte)) error {
 	item := -1
 
 	var (

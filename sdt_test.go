@@ -50,7 +50,7 @@ func TestSDT_Packetize(t *testing.T) {
 	assert := assert.New(t)
 
 	// OC3.demo.ts
-	expectedTS := []TS{
+	expectedTS := [][]byte{
 		{
 			0x47, 0x40, 0x11, 0x10, 0x00, 0x42, 0xF0, 0xD5, 0x00, 0x01, 0xC3, 0x00,
 			0x00, 0x00, 0x01, 0xFF, 0x00, 0x01, 0xFD, 0x80, 0x1D, 0x48, 0x1B, 0x01,
@@ -169,9 +169,9 @@ func TestSDT_Packetize(t *testing.T) {
 	//
 
 	counter := 0
-	packet := NewTS(17)
-	err := sdt.Packetize(packet, func(ts TS) {
-		assert.Equal(expectedTS[counter], ts)
+	ts := NewTS(17)
+	err := sdt.Packetize(ts, func(data []byte) {
+		assert.Equal(expectedTS[counter], data)
 		counter += 1
 	})
 	assert.NoError(err)

@@ -190,7 +190,9 @@ func (p *PMT) Finalize() {
 }
 
 // Packetize splits PMT to TS packets
-func (p *PMT) Packetize(packet TS, fn func(TS)) error {
+// packet - is a buffer to store data, on packet is ready,
+// it is passed to the callback as byte slice
+func (p *PMT) Packetize(packet TS, fn func([]byte)) error {
 	return psiPacketize(p, packet, fn)
 }
 
