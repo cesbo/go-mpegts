@@ -4,14 +4,13 @@ import (
 	"encoding/binary"
 )
 
-// ISO/IEC 13818-1 : 2.4.3 Specification of the Transport Stream syntax and semantics
-
 const (
 	SyncByte   uint8  = 0x47
 	PacketSize int    = 188
 	MaxPID     uint16 = 8191
 )
 
+// ISO/IEC 13818-1 : 2.4.3 Specification of the Transport Stream syntax and semantics
 type TS []byte
 
 type ScramblingControl byte
@@ -83,8 +82,8 @@ func (p TS) CheckCC(previous uint8) (uint8, bool) {
 	return cc, cc == expected
 }
 
-// IsPayload checks is packet has payload
-func (p TS) IsPayload() bool {
+// HasPayload checks is packet has payload
+func (p TS) HasPayload() bool {
 	return (p[3] & 0x10) != 0
 }
 
@@ -93,8 +92,8 @@ func (p TS) SetPayload() {
 	p[3] |= 0x10
 }
 
-// IsPUSI checks is payload starts in the packet (Payload Unit Start Indicator)
-func (p TS) IsPUSI() bool {
+// HasPUSI checks is payload starts in the packet (Payload Unit Start Indicator)
+func (p TS) HasPUSI() bool {
 	return (p[1] & 0x40) != 0
 }
 
@@ -110,7 +109,7 @@ func (p TS) ClearPUSI() {
 
 // HeaderSize returns size of packet header
 func (p TS) HeaderSize() int {
-	if !p.IsAF() {
+	if !p.HasAF() {
 		return 4
 	} else {
 		return 4 + 1 + int(p[4])
@@ -119,7 +118,7 @@ func (p TS) HeaderSize() int {
 
 // Payload returns payload if available
 func (p TS) Payload() []byte {
-	if !p.IsPayload() || p.IsTEI() {
+	if !p.HasPayload() || p.HasTEI() {
 		return nil
 	}
 
@@ -131,13 +130,13 @@ func (p TS) Payload() []byte {
 	return p[s:PacketSize]
 }
 
-// IsTEI checks the Transport Error Indicator bit
-func (p TS) IsTEI() bool {
+// HasTEI checks the Transport Error Indicator bit
+func (p TS) HasTEI() bool {
 	return (p[1] & 0x80) != 0
 }
 
-// IsAF checks the Adaptation Field bit
-func (p TS) IsAF() bool {
+// HasAF checks the Adaptation Field bit
+func (p TS) HasAF() bool {
 	return (p[3] & 0x20) != 0
 }
 

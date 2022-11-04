@@ -60,9 +60,9 @@ func (p PES) SetLength(value int) {
 	binary.BigEndian.PutUint16(p[4:], uint16(value))
 }
 
-// IsPTS checks is a Presentation Time Stamp (PTS) defined in the PES header.
+// HasPTS checks is a Presentation Time Stamp (PTS) defined in the PES header.
 // PTS field presents only for elementary streams.
-func (p PES) IsPTS() bool {
+func (p PES) HasPTS() bool {
 	return (p[7] & 0x80) != 0
 }
 
@@ -89,10 +89,10 @@ func (p PES) SetPTS(value Timestamp) {
 	p[13] = byte(value<<1) | 0x01
 }
 
-// IsDTS checks a Decoding TimeStamp (DTS) is defined in the PES header.
+// HasDTS checks a Decoding TimeStamp (DTS) is defined in the PES header.
 // DTS field presents only in pair with PTS field.
 // If DTS field is not presented than DTS value equal to PTS.
-func (p PES) IsDTS() bool {
+func (p PES) HasDTS() bool {
 	return (p[7] & 0x40) != 0
 }
 

@@ -2,6 +2,7 @@ package mpegts
 
 import "time"
 
+// PCR is Program Clock Reference
 type PCR uint64
 
 const (
@@ -13,8 +14,8 @@ const (
 	ProgramClock = 27000000 // 27MHz
 )
 
-// IsPCR returns true if PCR flag is set in the Adaptation Field.
-func (p TS) IsPCR() bool {
+// HasPCR returns true if PCR flag is set in the Adaptation Field.
+func (p TS) HasPCR() bool {
 	return (p[5] & 0x10) != 0
 }
 

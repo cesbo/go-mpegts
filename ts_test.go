@@ -80,8 +80,8 @@ func TestTS_Payload(t *testing.T) {
 		packet[i] = byte(i - 4)
 	}
 
-	assert.True(packet.IsPayload())
-	assert.True(packet.IsPUSI())
+	assert.True(packet.HasPayload())
+	assert.True(packet.HasPUSI())
 
 	payload := packet.Payload()
 

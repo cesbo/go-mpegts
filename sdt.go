@@ -14,6 +14,7 @@ const (
 	SdtItemSize    = 5
 )
 
+// SDT is Service Description Table
 type SDT struct {
 	header []byte
 	Items  []*SdtItem

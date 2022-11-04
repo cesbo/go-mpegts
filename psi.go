@@ -162,7 +162,7 @@ func (p *PSI) Assemble(packet TS, fn AssembleFn) {
 		return
 	}
 
-	if packet.IsPUSI() {
+	if packet.HasPUSI() {
 		remain := int(payload[0])
 		payload = payload[1:]
 

@@ -14,12 +14,13 @@ const (
 	PmtItemSize    = 5
 )
 
-// Program Map Table
+// PMT is Program Map Table
 type PMT struct {
 	header []byte
 	Items  []*PmtItem
 }
 
+// PMT Item contains information about elementary stream
 type PmtItem struct {
 	header []byte
 }

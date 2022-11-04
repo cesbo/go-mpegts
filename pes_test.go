@@ -20,7 +20,7 @@ func TestPES_CheckPrefix(t *testing.T) {
 func TestPES_GetPTS(t *testing.T) {
 	assert := assert.New(t)
 
-	if !assert.True(testData.IsPTS()) {
+	if !assert.True(testData.HasPTS()) {
 		return
 	}
 
@@ -100,7 +100,7 @@ func TestPES_SetPTS(t *testing.T) {
 func TestPES_GetDTS(t *testing.T) {
 	assert := assert.New(t)
 
-	if !assert.True(testData.IsDTS()) {
+	if !assert.True(testData.HasDTS()) {
 		return
 	}
 

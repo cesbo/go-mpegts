@@ -13,7 +13,7 @@ const (
 	PatItemSize    = 4
 )
 
-// Program Association Table
+// PAT is Program Association Table
 type PAT struct {
 	header []byte
 	Items  []*PatItem
