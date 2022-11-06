@@ -291,80 +291,78 @@ func (p *PmtItem) AppendDescriptors(desc Descriptors) {
 	binary.BigEndian.PutUint16(p.header[3:], 0xF000|uint16(ds))
 }
 
-func (p *PmtItem) checkData05() PacketType {
+func (p *PmtItem) checkData05() StreamType {
 	d := p.Descriptors()
 
 	for len(d) != 0 {
 		if d[0] == 0x6F {
-			return PACKET_AIT
+			return StreamDataAIT
 		}
 
 		d = d.Next()
 	}
 
-	return PACKET_DATA
+	return StreamData
 }
 
-func (p *PmtItem) checkData06() PacketType {
+func (p *PmtItem) checkData06() StreamType {
 	d := p.Descriptors()
 
 	for len(d) != 0 {
 		switch d[0] {
 		case 0x56:
-			return PACKET_TTX
+			return StreamDataTeletext
 		case 0x59:
-			return PACKET_SUB
+			return StreamDataSubtitles
 		case 0x6A, 0x81:
-			return PACKET_AUDIO_AC_3
+			return StreamAudioAC3
 		case 0x7A:
-			return PACKET_AUDIO_EAC_3
+			return StreamAudioEAC3
 		}
 
 		d = d.Next()
 	}
 
-	return PACKET_DATA
+	return StreamData
 }
 
-// Get PacketType by element ID and related descriptors
-func (p *PmtItem) GetType() PacketType {
-	var ty PacketType
-
+// StreamType returns stream type by element ID and related descriptors
+func (p *PmtItem) StreamType() StreamType {
 	switch p.Type() {
 	// Video
 	case 0x01:
-		ty = PACKET_VIDEO_H261
+		return StreamVideoH261
 	case 0x02:
-		ty = PACKET_VIDEO_H262
+		return StreamVideoH262
 	case 0x10:
-		ty = PACKET_VIDEO_H263
+		return StreamVideoH263
 	case 0x1B:
-		ty = PACKET_VIDEO_H264
+		return StreamVideoH264
 	case 0x24:
-		ty = PACKET_VIDEO_H265
+		return StreamVideoH265
 	// Audio
 	case 0x03:
-		ty = PACKET_AUDIO_MP2
+		return StreamAudioMP2
 	case 0x04:
-		ty = PACKET_AUDIO_MP3
+		return StreamAudioMP3
 	case 0x0F:
-		ty = PACKET_AUDIO_AAC
+		return StreamAudioAAC
 	case 0x11:
-		ty = PACKET_AUDIO_LATM
+		return StreamAudioLATM
 	case 0x81:
-		ty = PACKET_AUDIO_AC_3
+		return StreamAudioAC3
 	case 0x87:
-		ty = PACKET_AUDIO_EAC_3
+		return StreamAudioEAC3
 	// Data
 	case 0x05:
-		ty = p.checkData05()
+		return p.checkData05()
 	case 0x06:
-		ty = p.checkData06()
+		return p.checkData06()
+	case 0x86:
+		return StreamDataSCTE35
 	default:
-		ty = PACKET_DATA
+		return StreamData
 	}
-
-	return ty
 }
 
 func (p *PmtItem) Clone() *PmtItem {

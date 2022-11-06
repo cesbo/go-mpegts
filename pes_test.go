@@ -17,14 +17,14 @@ func TestPES_CheckPrefix(t *testing.T) {
 	assert.True(testData.CheckPrefix())
 }
 
-func TestPES_GetPTS(t *testing.T) {
+func TestPES_PTS(t *testing.T) {
 	assert := assert.New(t)
 
 	if !assert.True(testData.HasPTS()) {
 		return
 	}
 
-	assert.Equal(Timestamp(225220), testData.GetPTS())
+	assert.Equal(Timestamp(225220), testData.PTS())
 }
 
 func TestPES_SetPTS(t *testing.T) {
@@ -97,14 +97,14 @@ func TestPES_SetPTS(t *testing.T) {
 	})
 }
 
-func TestPES_GetDTS(t *testing.T) {
+func TestPES_DTS(t *testing.T) {
 	assert := assert.New(t)
 
 	if !assert.True(testData.HasDTS()) {
 		return
 	}
 
-	assert.Equal(Timestamp(222217), testData.GetDTS())
+	assert.Equal(Timestamp(222217), testData.DTS())
 }
 
 func TestPES_SetDTS(t *testing.T) {
@@ -193,5 +193,5 @@ func TestPES_PTS_NONE(t *testing.T) {
 		0x0A, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 	}
 
-	assert.Equal(MaxTimestamp, pes.GetPTS())
+	assert.Equal(MaxTimestamp, pes.PTS())
 }

@@ -36,7 +36,7 @@ func TestPCR_Set(t *testing.T) {
 	}
 }
 
-func TestPCR_Get(t *testing.T) {
+func TestTS_PCR(t *testing.T) {
 	assert := assert.New(t)
 
 	packet := NewTS(256)
@@ -45,10 +45,10 @@ func TestPCR_Get(t *testing.T) {
 
 	copy(packet[5:], []byte{0x10, 0xE1, 0x57, 0x8A, 0x18, 0xFE, 0x7B})
 
-	assert.Equal(PCR(2268366350823), packet.GetPCR())
+	assert.Equal(PCR(2268366350823), packet.PCR())
 }
 
-func TestPCR_GetEstimatedPCR(t *testing.T) {
+func TestPCR_EstimatedPCR(t *testing.T) {
 	previousPCR := PCR(354923263808)
 	currentPCR := PCR(354924281094)
 	lastBlock := uint64(7708)

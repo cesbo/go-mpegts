@@ -24,7 +24,7 @@ func (p TS) SetPCR(value PCR) {
 	p[5] |= 0x10 // PCR_flag
 
 	pcrBase := value / 300
-	pcrExt := value % 300
+	pcrExt := value - (pcrBase * 300)
 
 	p[6] = byte(pcrBase >> 25)
 	p[7] = byte(pcrBase >> 17)
@@ -34,9 +34,9 @@ func (p TS) SetPCR(value PCR) {
 	p[11] = byte(pcrExt)
 }
 
-// GetPCR returns PCR value from the Adaptation Field.
+// PCR returns PCR value from the Adaptation Field.
 // Packet should be with Adaptation Field
-func (p TS) GetPCR() PCR {
+func (p TS) PCR() PCR {
 	pcrBase := (PCR(p[6]) << 25) |
 		(PCR(p[7]) << 17) |
 		(PCR(p[8]) << 9) |
@@ -54,6 +54,11 @@ func (p PCR) Delta(u PCR) PCR {
 	} else {
 		return NonPcr - u + p
 	}
+}
+
+// Bitrate returns bitrate in bits per second for delta PCR.
+func (p PCR) Bitrate(bytes int) int {
+	return int((uint64(bytes) * 8 * ProgramClock) / uint64(p))
 }
 
 // Add returns the timestamp p+u

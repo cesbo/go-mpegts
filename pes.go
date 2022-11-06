@@ -66,8 +66,8 @@ func (p PES) HasPTS() bool {
 	return (p[7] & 0x80) != 0
 }
 
-// GetPTS returns PTS value.
-func (p PES) GetPTS() Timestamp {
+// PTS returns PTS value.
+func (p PES) PTS() Timestamp {
 	return (Timestamp(p[9]&0x0E) << 29) |
 		(Timestamp(p[10]) << 22) |
 		(Timestamp(p[11]&0xFE) << 14) |
@@ -96,8 +96,8 @@ func (p PES) HasDTS() bool {
 	return (p[7] & 0x40) != 0
 }
 
-// GetDTS returns DTS value.
-func (p PES) GetDTS() Timestamp {
+// DTS returns DTS value.
+func (p PES) DTS() Timestamp {
 	return (Timestamp(p[14]&0x0E) << 29) |
 		(Timestamp(p[15]) << 22) |
 		(Timestamp(p[16]&0xFE) << 14) |
