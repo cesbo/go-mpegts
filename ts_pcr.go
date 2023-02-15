@@ -63,7 +63,11 @@ func (p PCR) Bitrate(bytes int) int {
 
 // Add returns the timestamp p+u
 func (p PCR) Add(u PCR) PCR {
-	return (p + u) & MaxPcr
+	n := p + u
+	if n >= NonPcr {
+		n -= NonPcr
+	}
+	return n
 }
 
 // EstimatedPCR returns estimated PCR value

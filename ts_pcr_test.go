@@ -59,3 +59,7 @@ func TestPCR_EstimatedPCR(t *testing.T) {
 
 	assert.Equal(t, expected, estimatedPCR)
 }
+
+func TestPCR_Add(t *testing.T) {
+	assert.Equal(t, PCR(2), MaxPcr.Add(3))
+}
