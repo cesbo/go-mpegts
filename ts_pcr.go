@@ -1,6 +1,8 @@
 package mpegts
 
-import "time"
+import (
+	"time"
+)
 
 // PCR is Program Clock Reference
 type PCR uint64
@@ -11,7 +13,7 @@ const (
 )
 
 const (
-	ProgramClock = 27000000 // 27MHz
+	ProgramClock = 27e6 // 27MHz
 )
 
 // HasPCR returns true if PCR flag is set in the Adaptation Field.
@@ -47,12 +49,12 @@ func (p TS) PCR() PCR {
 	return (pcrBase * 300) + pcrExt
 }
 
-// Delta returns the difference p-u considering value overflow
-func (p PCR) Delta(u PCR) PCR {
-	if p >= u {
-		return p - u
+// Delta returns the difference p-previous considering value overflow
+func (p PCR) Delta(previous PCR) PCR {
+	if p >= previous {
+		return p - previous
 	} else {
-		return NonPcr - u + p
+		return NonPcr - previous + p
 	}
 }
 
@@ -90,5 +92,5 @@ func (p PCR) EstimatedPCR(previous PCR, lastBlock, currentBlock uint64) PCR {
 // Jitter returns the difference between two PCR values in nanoseconds
 func (p PCR) Jitter(previous PCR) time.Duration {
 	delta := p.Delta(previous)
-	return time.Duration(delta * 1000 / 27)
+	return time.Duration(delta) * time.Second / ProgramClock
 }

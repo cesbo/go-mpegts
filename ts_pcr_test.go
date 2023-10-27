@@ -2,6 +2,7 @@ package mpegts
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -62,4 +63,11 @@ func TestPCR_EstimatedPCR(t *testing.T) {
 
 func TestPCR_Add(t *testing.T) {
 	assert.Equal(t, PCR(2), MaxPcr.Add(3))
+}
+
+func TestPCR_Jitter(t *testing.T) {
+	previousPCR := PCR(354923263808)
+	currentPCR := PCR(354924281094)
+	jitter := currentPCR.Jitter(previousPCR)
+	assert.Equal(t, time.Duration(37677259), jitter)
 }

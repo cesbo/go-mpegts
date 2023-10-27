@@ -21,11 +21,11 @@ func Scale(duration, timescale int) Timestamp {
 }
 
 // Delta returns the difference t-u considering value overflow
-func (t Timestamp) Delta(u Timestamp) Timestamp {
-	if t >= u {
-		return t - u
+func (t Timestamp) Delta(previous Timestamp) Timestamp {
+	if t >= previous {
+		return t - previous
 	} else {
-		return NonTimestamp - u + t
+		return NonTimestamp - previous + t
 	}
 }
 
