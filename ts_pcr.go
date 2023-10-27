@@ -17,6 +17,7 @@ const (
 )
 
 // HasPCR returns true if PCR flag is set in the Adaptation Field.
+// Make sure that Adaptation Field is not empty: packet HeaderSize() more or equal than 6 bytes.
 func (p TS) HasPCR() bool {
 	return (p[5] & 0x10) != 0
 }
