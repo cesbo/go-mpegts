@@ -8,7 +8,7 @@ import (
 
 var pmtExpectedItems = []struct {
 	Type        uint8
-	PID         uint16
+	PID         PID
 	Descriptors Descriptors
 }{
 	{
@@ -40,7 +40,7 @@ func TestPMT_Decode(t *testing.T) {
 
 	assert.Equal(uint8(1), pmt.Version())
 	assert.Equal(uint16(6), pmt.PNR())
-	assert.Equal(uint16(2066), pmt.PCR())
+	assert.Equal(PID(2066), pmt.PCR())
 	assert.Equal(0, len(pmt.Descriptors()))
 
 	assert.Equal(2, len(pmt.Items))

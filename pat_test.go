@@ -63,7 +63,7 @@ func TestPAT_ParsePatSection(t *testing.T) {
 
 	expectedItems := []struct {
 		pnr uint16
-		pid uint16
+		pid PID
 	}{
 		{pnr: 0, pid: 16},
 		{pnr: 1, pid: 1031},
@@ -96,7 +96,7 @@ func TestPAT_Packetize(t *testing.T) {
 
 	items := []struct {
 		pnr uint16
-		pid uint16
+		pid PID
 	}{
 		{pnr: 0, pid: 16},
 		{pnr: 1, pid: 1031},

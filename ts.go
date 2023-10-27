@@ -1,13 +1,8 @@
 package mpegts
 
-import (
-	"encoding/binary"
-)
-
 const (
-	SyncByte   uint8  = 0x47
-	PacketSize int    = 188
-	MaxPID     uint16 = 8191
+	SyncByte   uint8 = 0x47
+	PacketSize int   = 188
 )
 
 // ISO/IEC 13818-1 : 2.4.3 Specification of the Transport Stream syntax and semantics
@@ -37,7 +32,7 @@ var NullTS = TS{
 }
 
 // NewTS allocates new TS packet. Sets sync byte and PID
-func NewTS(pid uint16) TS {
+func NewTS(pid PID) TS {
 	ts := make(TS, PacketSize)
 	ts[0] = SyncByte
 	ts.SetPID(pid)
@@ -46,14 +41,13 @@ func NewTS(pid uint16) TS {
 
 // PID returns packet identifier value.
 // PID is a 13-bit field that identifies the payload carried in the packet.
-func (p TS) PID() uint16 {
-	return binary.BigEndian.Uint16(p[1:]) & 0x1FFF
+func (p TS) PID() PID {
+	return getPID(p[1:])
 }
 
 // SetPID sets PID in packet
-func (p TS) SetPID(pid uint16) {
-	pid = (pid & 0x1FFF) | (uint16(p[1]&0xE0) << 8)
-	binary.BigEndian.PutUint16(p[1:], pid)
+func (p TS) SetPID(pid PID) {
+	setPID(p[1:], pid)
 }
 
 // CC returns continuity counter value.

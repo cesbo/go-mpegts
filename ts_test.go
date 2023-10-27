@@ -36,19 +36,19 @@ func TestTS_PID(t *testing.T) {
 	assert := assert.New(t)
 	packet := TS([]byte{0x47, 0x40, 0x11, 0x15})
 
-	assert.Equal(uint16(17), packet.PID())
+	assert.Equal(PID(17), packet.PID())
 
 	packet.SetPID(256)
 	assert.Equal([]byte{0x47, 0x41, 0x00, 0x15}, []byte(packet))
-	assert.Equal(uint16(256), packet.PID())
+	assert.Equal(PID(256), packet.PID())
 
 	packet.SetPID(0xFFFF)
 	assert.Equal([]byte{0x47, 0x5F, 0xFF, 0x15}, []byte(packet))
-	assert.Equal(MaxPID, packet.PID())
+	assert.Equal(MaxPid, packet.PID())
 
 	packet.SetPID(0)
 	assert.Equal([]byte{0x47, 0x40, 0x00, 0x15}, []byte(packet))
-	assert.Equal(uint16(0), packet.PID())
+	assert.Equal(PID(0), packet.PID())
 }
 
 func TestTS_CC(t *testing.T) {

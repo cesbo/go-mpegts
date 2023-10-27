@@ -146,12 +146,12 @@ func (p *PMT) SetPNR(pnr uint16) {
 	binary.BigEndian.PutUint16(p.header[3:], pnr)
 }
 
-func (p *PMT) PCR() uint16 {
-	return binary.BigEndian.Uint16(p.header[8:]) & 0x1FFF
+func (p *PMT) PCR() PID {
+	return getPID(p.header[8:])
 }
 
-func (p *PMT) SetPCR(pcr uint16) {
-	binary.BigEndian.PutUint16(p.header[8:], 0xE000|pcr)
+func (p *PMT) SetPCR(pcr PID) {
+	setPID(p.header[8:], pcr)
 }
 
 func (p *PMT) Descriptors() Descriptors {
@@ -265,12 +265,12 @@ func (p *PmtItem) SetType(ty uint8) {
 	p.header[0] = ty
 }
 
-func (p *PmtItem) PID() uint16 {
-	return binary.BigEndian.Uint16(p.header[1:]) & 0x1FFF
+func (p *PmtItem) PID() PID {
+	return getPID(p.header[1:])
 }
 
-func (p *PmtItem) SetPID(pid uint16) {
-	binary.BigEndian.PutUint16(p.header[1:], 0xE000|pid)
+func (p *PmtItem) SetPID(pid PID) {
+	setPID(p.header[1:], pid)
 }
 
 func (p *PmtItem) Descriptors() Descriptors {

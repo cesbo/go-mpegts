@@ -193,10 +193,10 @@ func (p *PatItem) SetPNR(pnr uint16) {
 }
 
 // Returns PID of the Program Map Table
-func (p *PatItem) PID() uint16 {
-	return binary.BigEndian.Uint16(p.header[2:]) & 0x1FFF
+func (p *PatItem) PID() PID {
+	return getPID(p.header[2:])
 }
 
-func (p *PatItem) SetPID(pid uint16) {
-	binary.BigEndian.PutUint16(p.header[2:], 0xE000|pid)
+func (p *PatItem) SetPID(pid PID) {
+	setPID(p.header[2:], pid)
 }
