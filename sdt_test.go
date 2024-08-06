@@ -31,7 +31,7 @@ func TestSDT_Decode(t *testing.T) {
 	assert.Equal(1, len(sdt.Items))
 
 	item := sdt.Items[0]
-	assert.Equal(uint16(1080), item.PNR())
+	assert.Equal(uint16(1080), item.ServiceID())
 	assert.Equal(true, item.IsPresentFollowing())
 	assert.Equal(true, item.IsSchedule())
 	assert.Equal(false, item.IsScrambled())
@@ -95,11 +95,11 @@ func TestSDT_Packetize(t *testing.T) {
 	sdt.SetONID(1)
 
 	items := []struct {
-		pnr  uint16
-		desc Descriptors
+		service_id uint16
+		desc       Descriptors
 	}{
 		{
-			pnr: 1,
+			service_id: 1,
 			desc: Descriptors{
 				0x48, 0x1B, 0x01, 0x06, 0x41, 0x76, 0x61, 0x6C,
 				0x70, 0x61, 0x12, 0x41, 0x76, 0x61, 0x6C, 0x70,
@@ -108,7 +108,7 @@ func TestSDT_Packetize(t *testing.T) {
 			},
 		},
 		{
-			pnr: 2,
+			service_id: 2,
 			desc: Descriptors{
 				0x48, 0x1D, 0x01, 0x06, 0x41, 0x76, 0x61, 0x6C,
 				0x70, 0x61, 0x14, 0x41, 0x76, 0x61, 0x6C, 0x70,
@@ -117,7 +117,7 @@ func TestSDT_Packetize(t *testing.T) {
 			},
 		},
 		{
-			pnr: 3,
+			service_id: 3,
 			desc: Descriptors{
 				0x48, 0x1D, 0x01, 0x06, 0x41, 0x76, 0x61, 0x6C,
 				0x70, 0x61, 0x14, 0x41, 0x76, 0x61, 0x6C, 0x70,
@@ -126,7 +126,7 @@ func TestSDT_Packetize(t *testing.T) {
 			},
 		},
 		{
-			pnr: 4,
+			service_id: 4,
 			desc: Descriptors{
 				0x48, 0x1B, 0x01, 0x06, 0x41, 0x76, 0x61, 0x6C,
 				0x70, 0x61, 0x12, 0x41, 0x76, 0x61, 0x6C, 0x70,
@@ -135,7 +135,7 @@ func TestSDT_Packetize(t *testing.T) {
 			},
 		},
 		{
-			pnr: 5,
+			service_id: 5,
 			desc: Descriptors{
 				0x48, 0x16, 0x16, 0x06, 0x41, 0x76, 0x61, 0x6C,
 				0x70, 0x61, 0x0D, 0x41, 0x76, 0x61, 0x6C, 0x70,
@@ -143,7 +143,7 @@ func TestSDT_Packetize(t *testing.T) {
 			},
 		},
 		{
-			pnr: 6,
+			service_id: 6,
 			desc: Descriptors{
 				0x48, 0x19, 0x19, 0x06, 0x41, 0x76, 0x61, 0x6C,
 				0x70, 0x61, 0x10, 0x41, 0x76, 0x61, 0x6C, 0x70,
@@ -155,7 +155,7 @@ func TestSDT_Packetize(t *testing.T) {
 
 	for _, item := range items {
 		sdtItem := NewSdtItem()
-		sdtItem.SetPNR(item.pnr)
+		sdtItem.SetServiceID(item.service_id)
 		sdtItem.SetSchedule(false)
 		sdtItem.SetPresentFollowing(true)
 		sdtItem.SetRunningStatus(4)
