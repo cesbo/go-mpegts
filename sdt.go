@@ -220,6 +220,14 @@ func (s *SdtItem) SetPNR(pnr uint16) {
 	binary.BigEndian.PutUint16(s.header, pnr)
 }
 
+func (s *SdtItem) SetServiceID(id uint16) {
+	binary.BigEndian.PutUint16(s.header[0:], id)
+}
+
+func (s *SdtItem) ServiceID() uint16 {
+	return binary.BigEndian.Uint16(s.header[0:2])
+}
+
 // Returns true if schedule information is present in the stream
 // EIT_schedule_flag
 func (s *SdtItem) IsSchedule() bool {
