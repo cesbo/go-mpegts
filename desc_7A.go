@@ -75,26 +75,26 @@ func (d *Desc_7A) Decode(desc Descriptors) error {
 }
 
 func (d *Desc_7A) ComponentTypeFlag() bool {
-	return d.component_flag&0b10000000 > 0
+	return d.component_flag&0b10000000 != 0
 }
 func (d *Desc_7A) BsidFlag() bool {
-	return d.component_flag&0b01000000 > 0
+	return d.component_flag&0b01000000 != 0
 }
 func (d *Desc_7A) MainidFlag() bool {
-	return d.component_flag&0b00100000 > 0
+	return d.component_flag&0b00100000 != 0
 }
 func (d *Desc_7A) AsvcFlag() bool {
-	return d.component_flag&0b00010000 > 0
+	return d.component_flag&0b00010000 != 0
 }
 func (d *Desc_7A) Mixinfoexists() bool {
-	return d.component_flag&0b00001000 > 0
+	return d.component_flag&0b00001000 != 0
 }
 func (d *Desc_7A) Substream1Flag() bool {
-	return d.component_flag&0b00000100 > 0
+	return d.component_flag&0b00000100 != 0
 }
 func (d *Desc_7A) Substream2Flag() bool {
-	return d.component_flag&0b00000010 > 0
+	return d.component_flag&0b00000010 != 0
 }
 func (d *Desc_7A) Substream3Flag() bool {
-	return d.component_flag&0b00000001 > 0
+	return d.component_flag&0b00000001 != 0
 }
