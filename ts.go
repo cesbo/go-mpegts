@@ -134,6 +134,13 @@ func (p TS) HasAF() bool {
 	return (p[3] & 0x20) != 0
 }
 
+func (p TS) AFLength() int {
+	if !p.HasAF() {
+		return 0
+	}
+	return int(p[4])
+}
+
 // SetAF sets Adaptation Field bit
 func (p TS) SetAF() {
 	p[3] |= 0x20
