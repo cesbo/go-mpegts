@@ -9,10 +9,6 @@ var (
 )
 
 func (d Descriptors) Check() error {
-	if len(d) == 0 {
-		return ErrDescriptorFormat
-	}
-
 	end := len(d)
 	skip := 0
 	next := 0
@@ -33,6 +29,9 @@ func (d Descriptors) Check() error {
 }
 
 func (d Descriptors) Next() Descriptors {
+	if len(d) == 0 {
+		return nil
+	}
 	next := 2 + int(d[1])
 
 	if len(d) == next {
